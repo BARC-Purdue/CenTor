@@ -1,0 +1,99 @@
+# Multipath-routing function
+
+import io
+import pycurl
+import time
+import stem.process
+from stem.util import term
+import threading
+import os
+
+
+def mtor(): 
+
+  SOCKS_PORT = 7000
+
+  ctr_old = 0
+  ctr_new = 5004445
+  threads = list()
+  name = 0
+  global ctr
+  ctr = 0
+
+  def query(url,range, name):
+    """
+    Uses pycurl to fetch a site using the proxy on the SOCKS_PORT.
+    """
+    output = io.BytesIO()
+    global ctr
+    query = pycurl.Curl()
+    query.setopt(pycurl.URL, url)
+    query.setopt(pycurl.PROXY, 'localhost')
+    query.setopt(pycurl.PROXYPORT, SOCKS_PORT)
+    query.setopt(pycurl.PROXYTYPE, pycurl.PROXYTYPE_SOCKS5_HOSTNAME)
+    query.setopt(pycurl.RANGE, range)
+    query.setopt(pycurl.WRITEFUNCTION, output.write)
+
+    try:
+      query.perform()
+      buffer = output.getvalue()
+      while ctr != name:
+        #print("name:"+str(name))
+        #print("ctr:"+str(ctr))
+        #time.sleep(0)
+        continue
+      #f.write(buffe 
+      print("ctr:"+str(ctr))
+      ctr = ctr + 1
+      #print(buffer)
+      if b"416 Requested Range Not Satisfiable" in buffer:
+        print("Download Complete")
+        print(time.time() - start_time)
+        f.close()
+        f2.close()
+        tor_process.kill()
+        os._exit(1)
+      else:
+        print(buffer)
+        f2.write(str(buffer))
+      del buffer
+    except pycurl.error as exc:
+      raise ValueError("Unable to reach %s (%s)" % (url, exc))
+      del output
+
+    except pycurl.error as exc:
+      return "Unable to reach %s (%s)" % (url, exc)
+
+
+  def print_bootstrap_lines(line):
+    if "Bootstrapped " in line:
+      print(term.format(line, term.Color.BLUE))
+
+  f = open("exclude", "r")
+  f2 = open("file", "w")
+  FINGERPRINTS = f.read()
+
+  print(term.format("Starting Tor:\n", term.Attr.BOLD))
+
+  tor_process = stem.process.launch_tor_with_config(
+    config = {
+      'SocksPort': str(SOCKS_PORT),
+      'MaxCircuitDirtiness': str(1),
+      'ExcludeNodes': str(FINGERPRINTS),
+    },
+    init_msg_handler = print_bootstrap_lines,
+  )
+
+
+  start_time = time.time()
+  while True:
+    range = str(ctr_old)+"-"+str(ctr_new)
+    x = threading.Thread(target=query, args=('http://xpznyhql2uczf3v6lj3wqcnbjr65avqfzrrem7oif5umfnayej6oyiqd.onion/download', range, name))
+    threads.append(x)
+    x.start()
+    #print("sleeping")
+    time.sleep(2)
+    ctr_old = ctr_new + 1
+    ctr_new = ctr_old + 5004445
+    name = name + 1
+
