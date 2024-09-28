@@ -206,7 +206,7 @@ The evaluation process requires you to interact with four terminal windows on th
 
     The new CDN onion address will be displayed as shown below.
 
-    ![image.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/42adcf0f-5833-4944-8f9f-b219fda855f3/d8f88f5e-3a33-4d51-b8dc-21474cc43c42/image.png)
+    ![CDN .onion Address](./image.png)
 
 ---
 
