@@ -494,5 +494,4 @@ References:
 
 1. Bento GitHub: [https://github.com/breakerspace/bento](https://github.com/breakerspace/bento)
 2. Shadow GitHub: [https://github.com/shadow/tornettools](https://github.com/shadow/tornettools)
-3. CDN GitHub: [https://github.com/BARC-Purdue/Bento/tree/master/testing/CenTor](https://github.com/BARC-Purdue/Bento/tree/master/testing/CenTor)
 
