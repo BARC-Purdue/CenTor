@@ -3,20 +3,13 @@
 ### **Experimentation**
 We have the following components to our evaluation: 
 
-- **Shadow Simulation**:
+- **Shadow Simulation**: To measure how our setup affects the Tor network as a whole. 
 
-To measure how our setup affects the Tor network as a whole. 
+- **CenTor Function**: Deploying the CenTor function on Bento
 
-- **CenTor Function**:
-
-Deploying the CenTor function on Bento
-
-- **Anonymity Metrics** (Optional, graphs and logs provided in this repo):
-  
-  To measure the level of anonymity a client achieves by using CenTor, we utilize a set of scripts (explained below). The anonymity is assessed by calculating the *entropy*, which reflects the distribution of clients across different geographical locations, Autonomous System Numbers (ASNs), and countries. This allows us to quantify how well CenTor maintains client anonymity in a region selected by the client.
+- **Anonymity Metrics** (Optional, graphs and logs provided in this repo): To measure the level of anonymity a client achieves by using CenTor, we utilize a set of scripts (explained below). The anonymity is assessed by calculating the *entropy*, which reflects the distribution of clients across different geographical locations, Autonomous System Numbers (ASNs), and countries. This allows us to quantify how well CenTor maintains client anonymity in a region selected by the client.
 
 - **Latency** (Optional, graphs and logs provided in this repo):
-
   We examine the impact of CenTor on latency by comparing file download times across three different configurations:
 
   1. **Vanilla Tor**: This uses a standard 6-hop Tor circuit (6 relays between the client and the server).
