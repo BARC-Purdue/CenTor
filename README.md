@@ -95,7 +95,7 @@ Configure 10% of the clients to connect to a Bento relay (set to non-anonymous, 
 
 ---
 
-### **ARTIFACT: Testing CenTor**
+### **ARTIFACT: Testing CenTor (Supplementary)**
 
 ### **Server-Side Setup**
 
@@ -210,7 +210,7 @@ The evaluation process requires you to interact with four terminal windows on th
 
 ---
 
-### **Debugging Steps**
+### **Debugging Steps (Supplementary)**
 
 If issues arise during setup or operation, follow these debugging instructions to troubleshoot:
 
@@ -241,7 +241,7 @@ If issues arise during setup or operation, follow these debugging instructions t
 
 ---
 
-### **Apache Setup Overview**
+### **Apache Setup Overview (Supplementary)**
 
 If further Apache configuration is needed, here are the critical paths:
 
@@ -253,7 +253,7 @@ If further Apache configuration is needed, here are the critical paths:
 
 ---
 
-### **Hidden Service Configuration**
+### **Hidden Service Configuration (Supplementary)**
 
 The Onion Service created for this evaluation uses a temporary directory for storing hostnames and keys:
 
@@ -264,7 +264,7 @@ For more information on Apache virtual hosts and how to configure them, refer to
 [Virtual Host Configuration Guide](https://www.liquidweb.com/kb/configure-apache-virtual-hosts-ubuntu-18-04/)
 
 ---
-### **Scripts** 
+### **Scripts (Supplementary)** 
 ### **Data Generation Scripts (`/src/data`)**
 
 These scripts are used to generate the necessary data for evaluating the performance of CenTor.
@@ -311,7 +311,7 @@ These scripts calculate various performance metrics that are used to analyze ano
 
 ---
 
-### **Data Files**
+### **Data Files (Supplementary)**
 
 ### **Tor Data**
 
@@ -344,7 +344,7 @@ These scripts calculate various performance metrics that are used to analyze ano
 ---
 
 
-### **Scripts to Test the Performance of CenTor Clients**
+### **Scripts to Test the Performance of CenTor Clients (Supplementary)**
 
 In this section, we will guide you through the process of testing the performance of CenTor clients using scripts from the CenTor GitHub repository(`/CenTor/experiments/scripts`). Please note that these tests require Tor to be installed on your system. The primary goal is to evaluate CenTor in different scenarios, such as region-based relays and varying anonymity configurations.
 
@@ -416,7 +416,7 @@ To focus the CenTor client on specific regions (e.g., Europe), you need to confi
 
 ---
 
-### **Running the Scripts**:
+### **Running the Scripts (Supplementary)**:
 
 Once the `torrc` file is configured, follow these steps to run the scripts:
 
@@ -454,7 +454,7 @@ Once the `torrc` file is configured, follow these steps to run the scripts:
 
 ---
 
-### **Summary of Tests:**
+### **Summary of Tests: (Supplementary)**
 
 - **CenTor Client (`centor_client.py`)**: Simulates a performance-optimized, non-anonymous client connected to a specific region.
 - **CenTor Service (`centor_service.py`)**: Hosts the CenTor service for non-anonymous, region-optimized testing.
@@ -463,7 +463,7 @@ Once the `torrc` file is configured, follow these steps to run the scripts:
 
 ---
 
-### **Results for CenTor Experiments**
+### **Results for CenTor Experiments (Supplementary)**
 
 The following links provide access to the results and performance graphs for the CenTor experiments:
 
@@ -494,7 +494,7 @@ The following links provide access to the results and performance graphs for the
 
 ---
 
-### **Experimentation Steps**
+### **Experimentation Steps (Supplementary)**
 
 To test uTor under various configurations and settings, follow these detailed steps:
 
@@ -524,7 +524,7 @@ To test uTor under various configurations and settings, follow these detailed st
 
 ---
 
-### **Summary of Experimentation**
+### **Summary of Experimentation (Supplementary)**
 
 - **`fingerprints.py`**: Generates an exclude list of top fast relays to simulate more realistic network conditions by removing high-performance relays.
 - **Customized `torrc`**: Used for both the Onion Service and client-side to prioritize low-bandwidth relays and create a real-world testing environment.
