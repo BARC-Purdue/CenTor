@@ -1,12 +1,21 @@
 # Artifact Evaluation
 
 ### **Experimentation**
+We have the following components to our evaluation: 
 
-- **Anonymity Metrics**:
+- **Shadow Simulation**:
+
+To measure how our setup affects the Tor network as a whole. 
+
+- **CenTor Function**:
+
+Deploying the CenTor function on Bento
+
+- **Anonymity Metrics** (Optional, graphs and logs provided in this repo):
   
   To measure the level of anonymity a client achieves by using CenTor, we utilize a set of scripts (explained below). The anonymity is assessed by calculating the *entropy*, which reflects the distribution of clients across different geographical locations, Autonomous System Numbers (ASNs), and countries. This allows us to quantify how well CenTor maintains client anonymity in a region selected by the client.
 
-- **Latency**:
+- **Latency** (Optional, graphs and logs provided in this repo):
 
   We examine the impact of CenTor on latency by comparing file download times across three different configurations:
 
@@ -15,83 +24,81 @@
   3. **CenTor with region selection**: A 3-hop CenTor circuit where the client selects a geographically closer region (or shadow) for the relays, further optimizing latency.
 
 ---
+### **Shadow Simulations**
 
-### **Scripts** 
-### **Data Generation Scripts (`/src/data`)**
+Simulating network scenarios for CenTor requires the use of the Shadow simulator. This is a resource-intensive process, so we recommend simulating at a reduced scale (e.g., `0.2` of the network).
 
-These scripts are used to generate the necessary data for evaluating the performance of CenTor.
+### **Downloading and Configuring Shadow:**
 
-- **`users.py`**:
+- Shadow can be downloaded from GitHub:  
+  [Shadow Repository](https://github.com/shadow/tornettools)
 
-  This script divides IPs across ASNs in proportion to the total number of users in each country. For example, if an ASN in a country contains 40% of the total IPs, and the country has 100 users (based on `users.txt`), that ASN is assigned 40 users in the output file `\\data\\generated\\<country_final.txt>`.
+  ### Steps to Download and Set Up Tornettools
 
-- **`country.py`**:
+1. **Clone the repository from GitHub:**
+    ```sh
+    git clone https://github.com/shadow/tornettools.git
+    ```
 
-  Generates the list of Tor relays available in each country. This helps define the network layout for experimentation.
+2. **Navigate to the cloned repository:**
+    ```sh
+    cd tornettools
+    ```
 
-- **`entry_node.py`**:
+3. **Create a virtual environment (optional, but recommended):**
+    ```sh
+    python3 -m venv venv
+    ```
 
-  Produces a list of entry nodes (the first hop in a Tor circuit) per country, which is critical for understanding the distribution of entry points into the Tor network.
+4. **Activate the virtual environment:**
+    - On Linux/macOS:
+      ```sh
+      source venv/bin/activate
+      ```
+    - On Windows:
+      ```sh
+      .\venv\Scripts\activate
+      ```
 
-- **`exit_node.py`**:
+5. **Install the required Python packages:**
+    ```sh
+    pip install -r requirements.txt
+    ```
 
-  Generates a list of exit nodes (the last hop in a Tor circuit) for each country, which is used to determine how traffic leaves the Tor network.
+6. **Run the Tornettools setup to ensure all dependencies are correctly configured:**
+    ```sh
+    python setup.py install
+    ```
 
-### **Metric Calculation Scripts (`/src/metrics`)**
+7. **Verify installation by running a sample command:**
+    ```sh
+    tornettools --help
+    ```
 
-These scripts calculate various performance metrics that are used to analyze anonymity and relay density in a region chosen by a client.
+- Once downloaded, configure it according to the scenarios described in section 5.2 of our paper.
 
-- **`country_entropy.py`**:
+**Simulation Scenarios:**
+Note: *Our simulations used 100% of the Tor Network which is highly resource intensive. We recommend replicating these scenarios to 10-30% of the Tor network.*
 
-  Computes the *entropy* of client distribution across different countries in a given region (or shadow). This metric quantifies how spread out the clients are across countries and indicates the level of anonymity.
+a. **Baseline Experiment**:
 
-- **`asn_entropy.py`**:
+Install Bento on 25% of the Tor relays and compare its performance to a setup where Bento is installed on 50% of the relays.
 
-  Similar to `country_entropy.py`, this script calculates the entropy of client distribution across ASNs (network operators) in a given region. A higher entropy indicates a more diverse distribution, contributing to better anonymity.
+- Download Bento and add the `./runserver` and `/tgen` command to each node to simulate Bento traffic.
+- Modify `shadow.config.yaml` to replicate the experiment.
+- Ensure consistency in the number of Bento nodes for each experimental run to maintain accuracy.
 
-- **`relay_density.py`**:
+b. **Multiple Clients Connecting to a Single CenTor Instance**:
 
-  Measures the density of Tor relays in a specific region. This helps understand how many relays are available in a particular geographic area, which can impact latency and anonymity.
+Set up 25% of the clients to connect to the same relay/Bento node by changing the IP in the TGen file. Compare the performance of clients connected to the relay versus clients not connected. For accurate results, ensure the `torrc` file of the Bento node is set to non-anonymous so that clients use a 3-hop circuit.
 
-- **`entry_density.py`**:
+c. **Multiple CenTor Instances on a Single Tor Relay**:
 
-  Computes the density of entry relays in a selected region, helping analyze how distributed the initial connection points are in the Tor network.
+Increase the number of instances running on a single relay by adjusting the "then" count (e.g., increase to 10). Compare the performance of these multiple instances against a generic relay setup.
 
-- **`exit_density.py`**:
+d. **Shadow-Aware Routing**:
 
-  Similar to `entry_density.py`, this script measures the density of exit relays, which is important for evaluating where traffic exits the network and impacts the performance and anonymity of the service.
-
----
-
-### **Data Files**
-
-### **Tor Data**
-
-- **`users.txt`**:
-
-  Contains the number of Tor users per country as of April 23, 2021, (data gathered from [Tor Metrics](https://metrics.torproject.org/userstats-relay-country.html)).
-
-- **`entry.txt`**:
-
-  Contains the number of Tor entry nodes available in each country, generated using `entry_node.py`.
-
-- **`exit.txt`**:
-
-  Contains the number of Tor exit nodes available in each country, generated using `exit_node.py`.
-
-### **ASN Data**
-
-- **`\\data\\<country_asn.txt>`**:
-
-  Lists the number of IP addresses associated with each ASN in a specific country. This data is retrieved from [ipinfo.io](https://ipinfo.io/countries).
-
-- **`\\data\\generated\\<country_final.txt>`**:
-
-  This file stores the final number of users distributed proportionally across ASNs based on the total number of users in a country, as generated by `users.py`.
-
-- **`relay_data.txt`**:
-
-  Contains data about the number of Tor relays in each country, generated using `country.py`.
+Configure 10% of the clients to connect to a Bento relay (set to non-anonymous, mimicking CenTor), but restrict routing to North American relays only. This can be achieved by adjusting the client’s `torrc` configuration file. Compare this setup to a generic Tor client routing setup, and observe how it impacts both client and relay performance.
 
 ---
 
@@ -264,42 +271,85 @@ For more information on Apache virtual hosts and how to configure them, refer to
 [Virtual Host Configuration Guide](https://www.liquidweb.com/kb/configure-apache-virtual-hosts-ubuntu-18-04/)
 
 ---
+### **Scripts** 
+### **Data Generation Scripts (`/src/data`)**
 
-### **Shadow Simulations**
+These scripts are used to generate the necessary data for evaluating the performance of CenTor.
 
-Simulating network scenarios for CenTor requires the use of the Shadow simulator. This is a resource-intensive process, so we recommend simulating at a reduced scale (e.g., `0.2` of the network).
+- **`users.py`**:
 
-### **Downloading and Configuring Shadow:**
+  This script divides IPs across ASNs in proportion to the total number of users in each country. For example, if an ASN in a country contains 40% of the total IPs, and the country has 100 users (based on `users.txt`), that ASN is assigned 40 users in the output file `\\data\\generated\\<country_final.txt>`.
 
-- Shadow can be downloaded from GitHub:  
-  [Shadow Repository](https://github.com/shadow/tornettools)
+- **`country.py`**:
 
-- Once downloaded, configure it according to the scenarios described in section 5.2 of the documentation.
+  Generates the list of Tor relays available in each country. This helps define the network layout for experimentation.
 
-**Simulation Scenarios:**
-Note: *Our simulations used 100% of the Tor Network which is highly resource intensive. We recommend replicating these scenarios to 10-30% of the Tor network.*
+- **`entry_node.py`**:
 
-a. **Baseline Experiment**:
+  Produces a list of entry nodes (the first hop in a Tor circuit) per country, which is critical for understanding the distribution of entry points into the Tor network.
 
-Install Bento on 25% of the Tor relays and compare its performance to a setup where Bento is installed on 50% of the relays.
+- **`exit_node.py`**:
 
-- Download Bento and add the `./runserver` and `/tgen` command to each node to simulate Bento traffic.
-- Modify `shadow.config.yaml` to replicate the experiment.
-- Ensure consistency in the number of Bento nodes for each experimental run to maintain accuracy.
+  Generates a list of exit nodes (the last hop in a Tor circuit) for each country, which is used to determine how traffic leaves the Tor network.
 
-b. **Multiple Clients Connecting to a Single CenTor Instance**:
+### **Metric Calculation Scripts (`/src/metrics`)**
 
-Set up 25% of the clients to connect to the same relay/Bento node by changing the IP in the TGen file. Compare the performance of clients connected to the relay versus clients not connected. For accurate results, ensure the `torrc` file of the Bento node is set to non-anonymous so that clients use a 3-hop circuit.
+These scripts calculate various performance metrics that are used to analyze anonymity and relay density in a region chosen by a client.
 
-c. **Multiple CenTor Instances on a Single Tor Relay**:
+- **`country_entropy.py`**:
 
-Increase the number of instances running on a single relay by adjusting the "then" count (e.g., increase to 10). Compare the performance of these multiple instances against a generic relay setup.
+  Computes the *entropy* of client distribution across different countries in a given region (or shadow). This metric quantifies how spread out the clients are across countries and indicates the level of anonymity.
 
-d. **Shadow-Aware Routing**:
+- **`asn_entropy.py`**:
 
-Configure 10% of the clients to connect to a Bento relay (set to non-anonymous, mimicking CenTor), but restrict routing to North American relays only. This can be achieved by adjusting the client’s `torrc` configuration file. Compare this setup to a generic Tor client routing setup, and observe how it impacts both client and relay performance.
+  Similar to `country_entropy.py`, this script calculates the entropy of client distribution across ASNs (network operators) in a given region. A higher entropy indicates a more diverse distribution, contributing to better anonymity.
+
+- **`relay_density.py`**:
+
+  Measures the density of Tor relays in a specific region. This helps understand how many relays are available in a particular geographic area, which can impact latency and anonymity.
+
+- **`entry_density.py`**:
+
+  Computes the density of entry relays in a selected region, helping analyze how distributed the initial connection points are in the Tor network.
+
+- **`exit_density.py`**:
+
+  Similar to `entry_density.py`, this script measures the density of exit relays, which is important for evaluating where traffic exits the network and impacts the performance and anonymity of the service.
 
 ---
+
+### **Data Files**
+
+### **Tor Data**
+
+- **`users.txt`**:
+
+  Contains the number of Tor users per country as of April 23, 2021, (data gathered from [Tor Metrics](https://metrics.torproject.org/userstats-relay-country.html)).
+
+- **`entry.txt`**:
+
+  Contains the number of Tor entry nodes available in each country, generated using `entry_node.py`.
+
+- **`exit.txt`**:
+
+  Contains the number of Tor exit nodes available in each country, generated using `exit_node.py`.
+
+### **ASN Data**
+
+- **`\\data\\<country_asn.txt>`**:
+
+  Lists the number of IP addresses associated with each ASN in a specific country. This data is retrieved from [ipinfo.io](https://ipinfo.io/countries).
+
+- **`\\data\\generated\\<country_final.txt>`**:
+
+  This file stores the final number of users distributed proportionally across ASNs based on the total number of users in a country, as generated by `users.py`.
+
+- **`relay_data.txt`**:
+
+  Contains data about the number of Tor relays in each country, generated using `country.py`.
+
+---
+
 
 ### **Scripts to Test the Performance of CenTor Clients**
 
